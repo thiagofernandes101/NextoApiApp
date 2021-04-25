@@ -1,0 +1,19 @@
+{
+  "name": "nextoapiapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "service.js",
+  "scripts": {
+    "start": "node service.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/thiagofernandes101/NextoApiApp.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/thiagofernandes101/NextoApiApp/issues"
+  },
+  "homepage": "https://github.com/thiagofernandes101/NextoApiApp#readme"
+}
