@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/88b5e255-c26a-45df-aee7-5f203c4b24fa/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/NextoApiApp",
+    "appService.deploySubpath": "."
+}
