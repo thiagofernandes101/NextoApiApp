@@ -14,15 +14,9 @@ module.exports = service;
 
 async function getPerfil() {
     let deferred = q.defer();
-    try {
-        let pool = await sql.connect(databaseConfiguration);
-        let perfil = await pool.request().query("select * from perfil");
-        return perfil.recordsets;
-    }
-    catch (error) {
-        console.log(error);
-        deferred.resolve();
-    }
+    let pool = await sql.connect(databaseConfiguration);
+    let perfil = await pool.request().query("select * from perfil");
+    return perfil.recordsets;
 }
 
 async function getPerfilById(perfilId) {
