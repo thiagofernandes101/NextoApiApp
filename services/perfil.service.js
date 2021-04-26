@@ -1,7 +1,8 @@
-// let databaseConfiguration = require('../dao/configuration/dbconfig');
-let databaseConfiguration = process.env.NextoLocalDatabase;
+let config = require('../config.json');
 let sql = require('mssql');
 let q = require('q');
+
+let databaseConfiguration = process.env.NEXTODATABASE || config.localConnection;
 
 let service = {};
 service.getPerfil = getPerfil;

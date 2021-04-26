@@ -1,0 +1,123 @@
+let config = require('../config.json');
+let sql = require('mssql');
+let q = require('q');
+
+let databaseConfiguration = process.env.NEXTODATABASE || config.localConnection;
+
+var service = {};
+service.addFormulario = addFormulario;
+service.getFormulario = getFormulario;
+service.getFormularioById = getFormularioById;
+service.deleteFormulario = deleteFormulario;
+service.updateFormulario = updateFormulario;
+
+module.exports = service;
+
+async function getFormulario() {
+    let deferred = q.defer();
+
+    try {
+        let pool = await sql.connect(databaseConfiguration);
+        let formulario = await pool.request()
+            .query('select * from formulario');
+
+        return formulario.recordsets;
+    }
+    catch (error) {
+        console.log(error);
+        deferred.resolve();
+    }
+}
+
+async function getFormularioById(id) {
+    let deferred = q.defer();
+
+    try {
+        let pool = await sql.connect(databaseConfiguration);
+        let formulario = pool.request()
+            .input('id_parameter', sql.Int, id)
+            .query('select * from formulario where id = id_parameter');
+
+        return formulario.recordsets;
+    }
+    catch (error) {
+        console.log(error);
+        deferred.resolve();
+    }
+}
+
+async function addFormulario(formulario) {
+    let deferred = q.defer();
+
+    try {
+        let pool = await sql.connect(databaseConfiguration);
+        let addedFormulario = await pool.request()
+            .input('solicitacao_parameter', sql.Int, formulario.Solicitacao)
+            .input('enviado_parameter', sql.DateTime, formulario.Enviado)
+            .input('responsavel_parameter', sql.Int, formulario.Responsavel)
+            .input('nome_parameter', sql.VarChar, formulario.Nome)
+            .input('retorno_parameter', sql.VarChar, formulario.Retorno)
+            .input('campoAplicacao_parameter', sql.VarChar, formulario.CampoAplicacao)
+            .input('fundamentosInvencao_parameter', sql.VarChar, formulario.FundamentosInvencao)
+            .input('estadoTecnica_parameter', sql.VarChar, formulario.EstadoTecnica)
+            .input('problemas_parameter', sql.VarChar, formulario.Problemas)
+            .input('solucaoInvencao_parameter', sql.VarChar, formulario.SolucaoInvencao)
+            .input('vantagens_parameter', sql.VarChar, formulario.Vantagens)
+            .input('descricaoDesenhos_parameter', sql.VarChar, formulario.DescricaoDesenhos)
+            .input('descricaoInvencao_parameter', sql.VarChar, formulario.DescricaoInvencao)
+            .query('insert into formulario (solicitacao, enviado, responsavel, nome, retorno, campoAplicacao, fundamentosInvencao, estadoTecnica, problemas, solucaoInvencao, vantagens, descricaoDesenhos, descricaoInvencao) values (@solicitacao_parameter, @enviado_parameter, @responsavel_parameter, @nome_parameter, @retorno_parameter, @campoAplicacao_parameter, @fundamentosInvencao_parameter, @estadoTecnica_parameter, @problemas_parameter, @solucaoInvencao_parameter, @vantagens_parameter, @descricaoDesenhos_parameter, @descricaoInvencao_parameter)')
+
+        return addedFormulario;
+    }
+    catch (error) {
+        console.log(error);
+        deferred.resolve();
+    }
+}
+
+async function updateFormulario(formulario) {
+    let deferred = q.defer();
+
+    try {
+        let pool = await sql.connect(databaseConfiguration);
+        let updatedFormulario = pool.request()
+            .input('id_parameter', sql.Int, formulario.Id)
+            .input('solicitacao_parameter', sql.Int, formulario.Solicitacao)
+            .input('enviado_parameter', sql.DateTime, formulario.Enviado)
+            .input('responsavel_parameter', sql.Int, formulario.Responsavel)
+            .input('nome_parameter', sql.VarChar, formulario.Nome)
+            .input('retorno_parameter', sql.VarChar, formulario.Retorno)
+            .input('campoAplicacao_parameter', sql.VarChar, formulario.CampoAplicacao)
+            .input('fundamentosInvencao_parameter', sql.VarChar, formulario.FundamentosInvencao)
+            .input('estadoTecnica_parameter', sql.VarChar, formulario.EstadoTecnica)
+            .input('problemas_parameter', sql.VarChar, formulario.Problemas)
+            .input('solucaoInvencao_parameter', sql.VarChar, formulario.SolucaoInvencao)
+            .input('vantagens_parameter', sql.VarChar, formulario.Vantagens)
+            .input('descricaoDesenhos_parameter', sql.VarChar, formulario.DescricaoDesenhos)
+            .input('descricaoInvencao_parameter', sql.VarChar, formulario.DescricaoInvencao)
+            .query('update formulario set solicitacao = @solicitacao_parameter, enviado = @enviado_parameter, responsavel = @responsavel_parameter, nome = @nome_parameter, retorno = @retorno_parameter, campoAplicacao = @campoAplicacao_parameter, fundamentosInvencao = @fundamentosInvencao_parameter, estadoTecnica = @estadoTecnica_parameter, problemas = @problemas_parameter, solucaoInvencao = @solucaoInvencao_parameter, vantagens = @vantagens_parameter, descricaoDesenhos = @descricaoDesenhos_parameter, descricaoInvencao = @descricaoInvencao_parameter where id = @id_parameter');
+
+        return updatedFormulario;
+    }
+    catch (error) {
+        console.log(error);
+        deferred.resolve();
+    }
+}
+
+async function deleteFormulario(id) {
+    let deferred = q.defer();
+
+    try {
+        let pool = await sql.connect(databaseConfiguration);
+        let formulario = await pool.request()
+            .input('id_parameter', sql.Int, id)
+            .query('delete from formulario where id = id_parameter');
+        
+        return formulario;
+    }
+    catch (error) {
+        console.log(error);
+        deferred.resolve();
+    }
+}

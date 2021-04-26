@@ -1,0 +1,5 @@
+{
+    "localConnection": "Server=tcp:LAPTOP-QRLOOIN3\\SQLSERVER;Initial Catalog=nexto;Persist Security Info=False;User ID=sa;Password=123456;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;",
+    "port": 3000,
+    "secret": "MongoSampleSecret-2021"
+}
