@@ -1,5 +1,5 @@
-let usuarioSpecification = require('../specification/usuario.specification');
-let solicitacaoSpecification = require('../specification/solicitacao.specification');
+let usuarioSpecification = require('../specifications/usuario.specification');
+let solicitacaoSpecification = require('../specifications/solicitacao.specification');
 
 let validations = {};
 validations.validaExistenciaResponsavelSolicitacao = validaExistenciaResponsavelSolicitacao;
