@@ -71,9 +71,7 @@ function deleteUsuario(request, response) {
 
 function autenticaChaveUsuario(request, response) {
     try {
-        let testSenha = bcrypt.decrypt(request.body.senha);
-        console.log(testSenha);
-        usuarioService.autenticaUsuario(request.body.usuario, request.body.senha)
+        usuarioService.autenticaUsuario(request.body.Usuario, request.body.Senha)
             .then(result => {
                 response.send(result);
             })

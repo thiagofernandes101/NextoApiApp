@@ -50,14 +50,16 @@ async function getUsuarioById(id) {
     }
 }
 
-async function addUsuario(usuario) {
+async function addUsuario(usuarioParameter) {
     let deferred = q.defer();
 
     try {
+        let usuario = lodash.omit(usuarioParameter, 'password')
         let pool = await sql.connect(databaseConfiguration);
+        let senhaUsuarioEncriptada = bcrypt.hashSync(usuario.Senha, 10);
         let addedUsuario = await pool.request()
             .input('usuario_parameter', sql.VarChar, usuario.Usuario)
-            .input('senha_parameter', sql.VarChar, usuario.Senha)
+            .input('senha_parameter', sql.VarChar, senhaUsuarioEncriptada)
             .input('nome_parameter', sql.VarChar, usuario.Nome)
             .input('telefone_parameter', sql.VarChar, usuario.Telefone)
             .input('email_parameter', sql.VarChar, usuario.Email)
@@ -128,11 +130,12 @@ async function autenticaUsuario(usuario, senha) {
 
         let usuarioAutenticado = await pool.request()
             .input('usuario_parameter', sql.VarChar, usuario)
-            .input('senha_parameter', sql.VarChar, bcrypt.decodeBase64(senha))
-            .query('select * from usuario where usuario = @usuario_parameter and senha = @senha_parameter');
+            .query('select * from usuario where usuario = @usuario_parameter');
         
-        if (bcrypt.compareSync(senha, usuarioAutenticado.Senha)) {
-            deferred.resolve({token :jwt.sign({sub: usuarioAutenticado.Id}, config.secret), usuarioId: usuarioAutenticado.Id});
+        usuarioAutenticado = usuarioAutenticado.recordset;
+        
+        if (usuarioAutenticado && bcrypt.compareSync(senha, usuarioAutenticado[0].Senha)) {
+            deferred.resolve({token :jwt.sign({sub: usuarioAutenticado[0].Id}, config.secret), usuarioId: usuarioAutenticado.Id});
         } else {
             deferred.resolve();
         }
