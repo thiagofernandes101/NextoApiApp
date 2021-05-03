@@ -16,8 +16,8 @@ async function listPerfis(request, response) {
     // });
     try {
         let perfilServiceResult = await perfilService.getPerfil();
-        console.log(perfilServiceResult);
-        response.send(perfilServiceResult);
+        console.log(perfilServiceResult[0]);
+        response.send(perfilServiceResult[0]);
     }
     catch (error) {
         response.send(error);
