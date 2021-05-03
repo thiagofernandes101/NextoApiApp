@@ -1,87 +1,151 @@
 var express = require('express');
 var router = express.Router();
+
 var usuarioService = require('../services/usuario.service');
-let bcrypt = require('bcryptjs');
+var usuarioValidation = require('../validations/usuario.validation');
 
 router.post('/registrar', registerUsuario);
-router.get('/', listPerfis);
+router.get('/', listUsuarios);
 router.get('/:id', listUsuarioById);
-router.put('/', updateExistingUsuario);
+router.put('/', updateUsuario);
 router.delete('/:id', deleteUsuario);
-router.post('/autenticar', autenticaChaveUsuario)
+router.post('/autenticar', autenticaChaveUsuario);
+router.post('/alteraSenha', alterarSenha);
 
 module.exports = router;
 
-function listPerfis(request, response) {
-    usuarioService.getUsuario().then(result => {
-        response.json(result[0]);
-    });
-}
-
-function listUsuarioById(request, response) {
-    usuarioService.getUsuarioById(parseInt(request.params.id)).then(result => {
-        response.json(result[0]);
-    })
-}
-
-function registerUsuario(request, response) {
-    let Usuario = request.body;
-
-    usuarioService.addUsuario(Usuario)
-        .then(result => {
-            response.status(201).send(result);
-        })
-        .catch(error => {
-            console.log(error);
-            response.status(400).send({
-                errorMessage: 'Falha ao inserir um Usuario'
-            });
-        });
-}
-
-function updateExistingUsuario(request, response) {
-    let Usuario = request.body;
-
-    usuarioService.updateUsuario(Usuario)
-        .then(result => {
-            response.status(201).send(result);
-        })
-        .catch(error => {
-            console.log(error);
-            response.status(400).send({
-                errorMessage: 'Falha ao atualizar um Usuario'
-            });
-        });
-}
-
-function deleteUsuario(request, response) {
-    let id = request.params.id;
-
-    usuarioService.deleteUsuario(id)
-        .then(result => {
-            response.status(201).send(result);
-        })
-        .catch(error => {
-            console.log(error);
-            response.status(400).send({
-                errorMessage: 'Falha ao excluir um Usuario'
-            });
-        });
-}
-
-function autenticaChaveUsuario(request, response) {
+async function listUsuarios(request, response) {
     try {
-        usuarioService.autenticaUsuario(request.body.Usuario, request.body.Senha)
-            .then(result => {
-                response.send(result);
-            })
-            .catch(error => {
-                console.log(error);
-                response.status(400).send(error);
-            });
+        let usuarios = await usuarioService.getUsuario();
+
+        if (usuarios[0]) {
+            response.status(200).send(usuarios[0]);
+        }
+        else {
+            response.status(400).send({ Error: 'Erro ao obter todos os usuários' });
+        }
+    }
+    catch (error) {
+        response.status(400).send(error.toString());
+    }
+}
+
+async function listUsuarioById(request, response) {
+    try {
+        let usuario = await usuarioService.getUsuarioById(request.params.id);
+
+        if (usuario[0]) {
+            response.status(200).send(usuario[0]);
+        }
+        else {
+            response.status(400).send({ Error: 'Error ao obter um usuario' });
+        }
+    }
+    catch (error) {
+        response.status(400).send(error.toString());
+    }
+}
+
+async function registerUsuario(request, response) {
+    try {
+        let usuarioJaCadastrado = await usuarioValidation.usuarioJaExistente(request.body);
+
+        if (!usuarioJaCadastrado) {
+            let usuarioAdicionado = await usuarioService.addUsuario(request.body);
+
+            if (usuarioAdicionado.rowsAffected) {
+                response.status(200).send({ Message: 'Usuário cadastrado com sucesso' });
+            }
+            else {
+                response.status(400).send({ Error: 'Erro ao adicionar um usuário' });
+            }
+        }
+        else {
+            response.status(400).send({ Error: 'Usuario já cadastrado' });
+        }
     }
     catch (error) {
         console.log(error);
-        response.status(400).send(error);
+        response.status(400).send(error.toString());
+    }
+}
+
+async function updateUsuario(request, response) {
+    try {
+        let usuarioJaCadastrado = await usuarioValidation.usuarioJaExistente(request.body);
+        
+        if (usuarioJaCadastrado) {
+            let usuario = await usuarioService.updateUsuario(request.body);
+    
+            if (usuario.rowsAffected) {
+                response.status(200);
+            }
+            else {
+                response.status(400).send({ Error: 'Erro ao atualizar um usuário' });
+            }
+        }
+        else {
+            response.status(400).send({ Error: 'Usuario não cadastrado' });
+        }
+    }
+    catch (error) {
+        response.status(400).send(error.toString());
+    }
+}
+
+async function deleteUsuario(request, response) {
+    try {
+        let usuarioDeletado = await usuarioService.deleteUsuario(request.params.id);
+
+        if (usuarioDeletado.rowsAffected) {
+            response.status(200).send(usuarioDeletado[0]);
+        }
+        else {
+            response.status(400).send({ Error: 'Erro ao exluir um usuario' });
+        }
+    }
+    catch (error) {
+        console.log(error);
+        response.status(400).send(error.toString());
+    }
+}
+
+async function autenticaChaveUsuario(request, response) {
+    try {
+        let result = await usuarioService.autenticaUsuario(request.body.Usuario, request.body.Senha);
+        if (result[0] > 0) {
+            response.status(200).send(result);
+        }
+        else {
+            response.status(400).send('Falha na autenticação');
+        }
+    }
+    catch (error) {
+        console.log(error);
+        response.status(400).send(error.toString());
+    }
+}
+
+async function alterarSenha(request, response) {
+    try {
+        let usuarioJaCadastrado = await usuarioValidation.usuarioJaExistente(request.body);
+
+        if (usuarioJaCadastrado) {
+            let result = await usuarioService.alterarSenha(request.body.Usuario, request.body.Senha);
+
+            if (result.rowsAffected) {
+                response.status(200).send({ Message: 'Senha alterada com sucesso' });
+            }
+            else {
+                response.status(400).send({ Error: 'Erro ao alterar a senha' });
+            }
+        }
+        else {
+            response.send(400).send({ Error: 'Usuário não encontrado. Não será possível alterar a senha' });
+        }
+    }
+    catch (error) {
+        console.log(error);
+        response.status(400).send(error.toString());
     }
 }
