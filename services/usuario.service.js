@@ -26,7 +26,7 @@ async function getUsuario() {
         let usuario = await pool.request()
             .query('select * from Usuario');
 
-        return usuario.recordsets;
+        return usuario.recordset;
     }
     catch (error) {
         throw new Error(error);
@@ -40,7 +40,7 @@ async function getUsuarioById(id) {
             .input('id_parameter', sql.Int, id)
             .query('select * from Usuario where id = @id_parameter');
 
-        return usuario.recordsets;
+        return usuario.recordset;
     }
     catch (error) {
         throw new Error(error);
@@ -77,7 +77,7 @@ async function updateUsuario(usuario) {
         let pool = await sql.connect(databaseConfiguration);
 
         let updatedUsuario = await pool.request()
-            .input('id_parameter', sql.Int, usuario.id)
+            .input('id_parameter', sql.Int, usuario.Id)
             .input('nome_parameter', sql.VarChar, usuario.Nome)
             .input('telefone_parameter', sql.VarChar, usuario.Telefone)
             .input('email_parameter', sql.VarChar, usuario.Email)
@@ -119,7 +119,7 @@ async function getByUsuario(usuario) {
             .input('usuario_parameter', sql.VarChar, usuario)
             .query('select * from usuario where usuario = @usuario_parameter');
 
-        return usuarioAutenticado.recordsets;
+        return usuarioAutenticado.recordset;
     }
     catch (error) {
         throw new Error(error);
@@ -129,9 +129,10 @@ async function getByUsuario(usuario) {
 async function autenticaUsuario(usuario, senha) {
     let deferred = q.defer();
     try {
-        let usuarioAutenticado = await getByUsuario(usuario,);
-        if (usuarioAutenticado[0].length > 0 && bcrypt.compareSync(senha, usuarioAutenticado[0].Senha)) {
-            deferred.resolve({ token: jwt.sign({ sub: usuarioAutenticado[0].Id }, config.secret), usuarioId: usuarioAutenticado[0].Id });
+        let usuarioAutenticado = await getByUsuario(usuario);
+        // console.log(usuarioAutenticado[0].Senha);
+        if (usuarioAutenticado.length > 0 && bcrypt.compareSync(senha, usuarioAutenticado[0].Senha)) {
+            deferred.resolve({ token: jwt.sign({ sub: usuarioAutenticado[0].Id }, config.secret), usuario: usuarioAutenticado[0] });
         } else {
             deferred.resolve();
         }

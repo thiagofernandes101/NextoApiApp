@@ -1,3 +1,4 @@
+const { response } = require('express');
 var express = require('express');
 var router = express.Router();
 
@@ -18,8 +19,8 @@ async function listUsuarios(request, response) {
     try {
         let usuarios = await usuarioService.getUsuario();
 
-        if (usuarios[0]) {
-            response.status(200).send(usuarios[0]);
+        if (usuarios) {
+            response.status(200).send(usuarios);
         }
         else {
             response.status(400).send({ Error: 'Erro ao obter todos os usuários' });
@@ -53,7 +54,7 @@ async function registerUsuario(request, response) {
         if (!usuarioJaCadastrado) {
             let usuarioAdicionado = await usuarioService.addUsuario(request.body);
 
-            if (usuarioAdicionado.rowsAffected) {
+            if (usuarioAdicionado.rowsAffected[0] != 0) {
                 response.status(200).send({ Message: 'Usuário cadastrado com sucesso' });
             }
             else {
@@ -73,12 +74,12 @@ async function registerUsuario(request, response) {
 async function updateUsuario(request, response) {
     try {
         let usuarioJaCadastrado = await usuarioValidation.usuarioJaExistente(request.body);
-        
+
         if (usuarioJaCadastrado) {
             let usuario = await usuarioService.updateUsuario(request.body);
-    
-            if (usuario.rowsAffected) {
-                response.status(200);
+
+            if (usuario.rowsAffected[0] != 0) {
+                response.status(200).send({ Message: 'Usuário atualizado com sucesso' });;
             }
             else {
                 response.status(400).send({ Error: 'Erro ao atualizar um usuário' });
@@ -97,12 +98,13 @@ async function deleteUsuario(request, response) {
     try {
         let usuarioDeletado = await usuarioService.deleteUsuario(request.params.id);
 
-        if (usuarioDeletado.rowsAffected) {
+        if (usuarioDeletado.rowsAffected[0] != 0) {
             response.status(200).send(usuarioDeletado[0]);
         }
         else {
-            response.status(400).send({ Error: 'Erro ao exluir um usuario' });
+            response.status(200).send({ Error: 'Nenhum usuário encontrado para exclusão' });
         }
+
     }
     catch (error) {
         console.log(error);
@@ -113,7 +115,7 @@ async function deleteUsuario(request, response) {
 async function autenticaChaveUsuario(request, response) {
     try {
         let result = await usuarioService.autenticaUsuario(request.body.Usuario, request.body.Senha);
-        if (result[0] > 0) {
+        if (result) {
             response.status(200).send(result);
         }
         else {
