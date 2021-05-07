@@ -1,6 +1,5 @@
 let config = require('../config.json');
 let sql = require('mssql');
-let q = require('q');
 
 let databaseConfiguration = process.env.NEXTODATABASE || config.localConnection;
 
@@ -14,41 +13,33 @@ service.updateFormulario = updateFormulario;
 module.exports = service;
 
 async function getFormulario() {
-    let deferred = q.defer();
-
     try {
         let pool = await sql.connect(databaseConfiguration);
         let formulario = await pool.request()
             .query('select * from formulario');
 
-        return formulario.recordsets;
+        return formulario.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
 async function getFormularioById(id) {
-    let deferred = q.defer();
-
     try {
         let pool = await sql.connect(databaseConfiguration);
-        let formulario = pool.request()
+        let formulario = await pool.request()
             .input('id_parameter', sql.Int, id)
-            .query('select * from formulario where id = id_parameter');
+            .query('select * from formulario where id = @id_parameter');
 
-        return formulario.recordsets;
+        return formulario.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
 async function addFormulario(formulario) {
-    let deferred = q.defer();
-
     try {
         let pool = await sql.connect(databaseConfiguration);
         let addedFormulario = await pool.request()
@@ -70,17 +61,14 @@ async function addFormulario(formulario) {
         return addedFormulario;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
 async function updateFormulario(formulario) {
-    let deferred = q.defer();
-
     try {
         let pool = await sql.connect(databaseConfiguration);
-        let updatedFormulario = pool.request()
+        let updatedFormulario = await pool.request()
             .input('id_parameter', sql.Int, formulario.Id)
             .input('solicitacao_parameter', sql.Int, formulario.Solicitacao)
             .input('enviado_parameter', sql.DateTime, formulario.Enviado)
@@ -100,14 +88,11 @@ async function updateFormulario(formulario) {
         return updatedFormulario;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
 async function deleteFormulario(id) {
-    let deferred = q.defer();
-
     try {
         let pool = await sql.connect(databaseConfiguration);
         let formulario = await pool.request()
@@ -117,7 +102,6 @@ async function deleteFormulario(id) {
         return formulario;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }

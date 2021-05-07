@@ -132,7 +132,7 @@ async function autenticaUsuario(usuario, senha) {
         let usuarioAutenticado = await getByUsuario(usuario);
         // console.log(usuarioAutenticado[0].Senha);
         if (usuarioAutenticado.length > 0 && bcrypt.compareSync(senha, usuarioAutenticado[0].Senha)) {
-            deferred.resolve({ token: jwt.sign({ sub: usuarioAutenticado[0].Id }, config.secret), usuario: usuarioAutenticado[0] });
+            deferred.resolve({ Token: jwt.sign({ sub: usuarioAutenticado[0].Id }, config.secret), Id: usuarioAutenticado[0].Id, Usuario: usuarioAutenticado[0].Usuario, Senha: usuarioAutenticado[0].Senha, Telefone: usuarioAutenticado[0].Telefone, Email: usuarioAutenticado[0].Email, Cpf: usuarioAutenticado[0].Cpf, Sexo: usuarioAutenticado[0].Sexo, Estado: usuarioAutenticado[0].Estado, Cidade: usuarioAutenticado[0].Cidade, Perfil: usuarioAutenticado[0].Perfil });
         } else {
             deferred.resolve();
         }

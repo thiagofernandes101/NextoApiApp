@@ -21,11 +21,10 @@ async function getSolicitacao() {
         let solicitacao = await pool.request()
             .query('select * from solicitacao');
 
-        return solicitacao.recordsets;
+        return solicitacao.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -38,11 +37,10 @@ async function getSolicitacaoById(id) {
             .input('id_parameter', sql.Int, id)
             .query('select * from solicitacao where id = @id_parameter');
 
-        return solicitacao.recordsets;
+        return solicitacao.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -65,8 +63,7 @@ async function addSolicitacao(solicitacao) {
         return addedSolicitacao;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -90,8 +87,7 @@ async function updateSolicitacao(solicitacao) {
         return updatedSolicitacao;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -107,7 +103,6 @@ async function deleteSolicitacao(id) {
         return solicitacao;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }

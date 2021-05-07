@@ -19,7 +19,7 @@ async function listUsuarios(request, response) {
     try {
         let usuarios = await usuarioService.getUsuario();
 
-        if (usuarios) {
+        if (usuarios.length > 0) {
             response.status(200).send(usuarios);
         }
         else {
@@ -35,8 +35,8 @@ async function listUsuarioById(request, response) {
     try {
         let usuario = await usuarioService.getUsuarioById(request.params.id);
 
-        if (usuario[0]) {
-            response.status(200).send(usuario[0]);
+        if (usuario.length > 0) {
+            response.status(200).send(usuario);
         }
         else {
             response.status(400).send({ Error: 'Error ao obter um usuario' });
@@ -66,7 +66,6 @@ async function registerUsuario(request, response) {
         }
     }
     catch (error) {
-        console.log(error);
         response.status(400).send(error.toString());
     }
 }
@@ -102,7 +101,7 @@ async function deleteUsuario(request, response) {
             response.status(200).send(usuarioDeletado[0]);
         }
         else {
-            response.status(200).send({ Error: 'Nenhum usuário encontrado para exclusão' });
+            response.status(200).send({ Message: 'Nenhum usuário encontrado para exclusão' });
         }
 
     }

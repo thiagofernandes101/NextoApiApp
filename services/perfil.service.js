@@ -17,7 +17,7 @@ async function getPerfil() {
     let deferred = q.defer();
     let pool = await sql.connect(databaseConfiguration);
     let perfil = await pool.request().query("select * from perfil");
-    return perfil.recordsets;
+    return perfil.recordset;
 }
 
 async function getPerfilById(perfilId) {
@@ -27,11 +27,10 @@ async function getPerfilById(perfilId) {
         let perfil = await pool.request()
             .input('id_parameter', sql.Int, perfilId)
             .query("select * from perfil where id = @id_parameter");
-        return perfil.recordsets;
+        return perfil.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -48,8 +47,7 @@ async function addPerfil(perfil) {
         return addedPerfil;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -67,8 +65,7 @@ async function updatePerfil(perfil) {
         return updatedPerfil;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -84,7 +81,6 @@ async function deletePerfil(id) {
         return deletedPerfil;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }

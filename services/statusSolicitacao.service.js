@@ -21,11 +21,10 @@ async function getStatusSolicitacao() {
         let statusSolicitacao = await pool.request()
             .query('select * from statusSolicitacao');
         
-        return statusSolicitacao.recordsets;
+        return statusSolicitacao.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -38,11 +37,10 @@ async function getStatusSolicitacaoById(id) {
             .input('id_parameter', sql.Int, id)
             .query('select * from statusSolicitacao where id = @id_parameter');
         
-        return statusSolicitacao.recordsets;
+        return statusSolicitacao.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -59,8 +57,7 @@ async function addStatusSolicitacao(statusSolicitacao) {
         return addedstatusSolicitacao;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -78,8 +75,7 @@ async function updateStatusSolicitacao(statusSolicitacao) {
         return updatedstatusSolicitacao;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -95,7 +91,6 @@ async function deleteStatusSolicitacao(id) {
         return statusSolicitacao;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
