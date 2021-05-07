@@ -1,5 +1,6 @@
 let solicitacaoService = require('../services/solicitacao.service');
 let tipoSolicitacaoService = require('../services/tipoSolicitacao.service');
+let statusSolicitacaoService = require('../services/statusSolicitacao.service');
 
 let solicitacaoSpecifications = {};
 solicitacaoSpecifications.existeSolicitacaoCadastradaPorId = existeSolicitacaoCadastradaPorId;
@@ -15,4 +16,9 @@ async function existeSolicitacaoCadastradaPorId(id) {
 async function existeTipoSolicitacaoCadastradaPorId(id) {
     let tipoSolicitacaoCadastrada = await tipoSolicitacaoService.getTipoSolicitacaoById(id);
     return tipoSolicitacaoCadastrada.length > 0;
+}
+
+async function existeStatusSolicitacaoCadastradoPorId(id) {
+    let statusSolicitacaoCadastrado = await statusSolicitacaoService.getStatusSolicitacaoById(id);
+    return statusSolicitacaoCadastrado.length > 0;
 }

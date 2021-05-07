@@ -97,7 +97,7 @@ async function deleteFormulario(id) {
         let pool = await sql.connect(databaseConfiguration);
         let formulario = await pool.request()
             .input('id_parameter', sql.Int, id)
-            .query('delete from formulario where id = id_parameter');
+            .query('delete from formulario where id = @id_parameter');
         
         return formulario;
     }
