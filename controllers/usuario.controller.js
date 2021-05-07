@@ -98,7 +98,7 @@ async function deleteUsuario(request, response) {
         let usuarioDeletado = await usuarioService.deleteUsuario(request.params.id);
 
         if (usuarioDeletado.rowsAffected[0] != 0) {
-            response.status(200).send(usuarioDeletado[0]);
+            response.status(200).send({ Message: 'Usuário excluido com sucesso' });
         }
         else {
             response.status(200).send({ Message: 'Nenhum usuário encontrado para exclusão' });

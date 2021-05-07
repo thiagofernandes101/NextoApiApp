@@ -16,8 +16,7 @@ async function listPerfis(request, response) {
     // });
     try {
         let perfilServiceResult = await perfilService.getPerfil();
-        console.log(perfilServiceResult[0]);
-        response.send(perfilServiceResult[0]);
+        response.send(perfilServiceResult);
     }
     catch (error) {
         response.send(error);
@@ -26,7 +25,7 @@ async function listPerfis(request, response) {
 
 function listPerfilById(request, response) {
     perfilService.getPerfilById(parseInt(request.params.id)).then(result => {
-        response.json(result[0]);
+        response.json(result);
     })
 }
 

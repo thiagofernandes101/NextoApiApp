@@ -59,7 +59,7 @@ async function registerFormulario(request, response) {
             }
         }
         else {
-            response.status(200).send({Message: 'Formulario já cadastrado'});
+            response.status(200).send({Message: 'Formulario inválido. Por favor verifique se o responsável e a solicitação são válidos'});
         }
     }
     catch (error) {
@@ -75,14 +75,14 @@ async function updateFormulario(request, response) {
             let formularioCadastrado = await formularioService.updateFormulario(request.body);
 
             if (formularioCadastrado.rowsAffected[0] != 0) {
-                response.status(200).send({ Message: 'Formulário cadastrado com sucesso' });
+                response.status(200).send({ Message: 'Formulário atualizado com sucesso' });
             }
             else {
                 response.status(400).send({ Error: 'Não foi possível atualizar o formulário' });
             }
         }
         else {
-            response.status(200).send({Message: 'Formulario inválido. Por favor verifique se o responsável e a solicitação são válidos'});
+            response.status(400).send({Error: 'Formulario inválido. Por favor verifique se o responsável e a solicitação são válidos'});
         }
     }
     catch (error) {
@@ -95,7 +95,7 @@ async function deleteFormulario(request, response) {
         let formularioExcluido = await formularioService.deleteFormulario(request.params.id);
 
         if (formularioExcluido.rowsAffected[0] != 0) {
-            response.status(200).send(formularioExcluido[0]);
+            response.status(200).send({Message: 'Formulário excluido com sucesso'});
         }
         else {
             response.status(200).send({ Message: 'Nenhum formulario encontrado para exclusao' });
