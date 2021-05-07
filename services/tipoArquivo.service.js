@@ -21,11 +21,10 @@ async function getTipoArquivo() {
         let tipoArquivo = await pool.request()
             .query('select * from tipoArquivo');
         
-        return tipoArquivo.recordsets;
+        return tipoArquivo.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -38,11 +37,10 @@ async function getTipoArquivoById(id) {
             .input('id_parameter', sql.Int, id)
             .query('select * from tipoArquivo where id = @id_parameter');
         
-        return tipoArquivo.recordsets;
+        return tipoArquivo.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -59,8 +57,7 @@ async function addTipoArquivo(tipoArquivo) {
         return addedTipoArquivo;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -78,8 +75,7 @@ async function updateTipoArquivo(tipoArquivo) {
         return updatedTipoArquivo;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -95,7 +91,6 @@ async function deleteTipoArquivo(id) {
         return tipoArquivo;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }

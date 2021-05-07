@@ -2,104 +2,106 @@ var express = require('express');
 var router = express.Router();
 
 var formularioService = require('../services/formulario.service');
-var validacaoFormulario = require('../validations/formulario.validation');
+var formularioValidation = require('../validations/formulario.validation');
 
 router.post('/', registerFormulario);
-router.get('/', listPerfis);
+router.get('/', listFormularios);
 router.get('/:id', listFormularioById);
-router.put('/', updateExistingFormulario);
+router.put('/', updateFormulario);
 router.delete('/:id', deleteFormulario);
 
 module.exports = router;
 
-function listPerfis(request, response) {
-    formularioService.getFormulario().then(result => {
-        response.json(result[0]);
-    }).catch(error => {
-        console.log(error);
-        response.status(400).send({
-            errorMessage: 'Nenhum formulário encontrado'
-        });
-    });
-}
-
-function listFormularioById(request, response) {
+async function listFormularios(request, response) {
     try {
-        let id = request.params.id;
+        let formularios = await formularioService.getFormulario();
 
-        formularioService.getFormularioById(id).then(result => {
-            response.json(result[0]);
-        }).catch(error => {
-            response.status(400).send({
-                errorMessage: 'Nenhum formulário encontrado'
-            });
-        });
+        if (formularios.length > 0) {
+            response.status(200).send(formularios);
+        }
+        else {
+            response.status(400).send({ Error: 'Nenhum formulário encontrado' });
+        }
     }
     catch (error) {
-        
+        response.status(400).send(error.toString());
+    }
+}
+
+async function listFormularioById(request, response) {
+    try {
+        let formulario = await formularioService.getFormularioById(request.params.id);
+
+        if (formulario.length > 0) {
+            response.status(200).send(formulario);
+        }
+        else {
+            response.status(400).send({ Error: 'Nenhum formulário encontrado' });
+        }
+    }
+    catch (error) {
+        response.status(400).send(error.toString());
     }
 }
 
 async function registerFormulario(request, response) {
     try {
-        let formulario = request.body;
-        let formularioValidoParaCadastro = await validacaoFormulario.validaExistenciaResponsavelSolicitacao(formulario);
+        let formularioValido = await formularioValidation.existeResponsavelSolicitacao(request.body.Responsavel, request.body.Solicitacao);
 
-        if (!formularioValidoParaCadastro) {
-            response.status(400).send({errorMessage: 'Informacoes obrigatorias nao encontradas ou informadas'})
+        if (formularioValido) {
+            let formularioCadastrado = await formularioService.addFormulario(request.body);
+
+            if (formularioCadastrado.rowsAffected[0] != 0) {
+                response.status(200).send({ Message: 'Formulário cadastrado com sucesso' });
+            }
+            else {
+                response.status(400).send({ Error: 'Não foi possível cadastrar o formulário' });
+            }
         }
-
-        formularioService.addFormulario(formulario).then(result => {
-            response.status(201).send(result);
-        }).catch(error => {
-            response.status(400).send(error);
-        });
-    }
-    catch (error) {
-        errorMessage(error, response, 'Erro ao cadastrar um formulário');
-    }
-}
-
-async function updateExistingFormulario(request, response) {
-    try {
-        let formulario = request.body;
-
-        if (await validacaoFormulario.validaExitenciaResponsavelSolicitacao(formulario)) {
-            formularioService.updateFormulario(formulario).then(result => {
-                response.status(201).send(result);
-            }).catch(error => {
-                response.status(400).send({ errorMessage: 'Falha ao atualizar um Formulario' });
-            });
+        else {
+            response.status(200).send({Message: 'Formulario já cadastrado'});
         }
     }
     catch (error) {
-        errorMessage(error, response, 'Erro ao atualizar um formulário');
+        response.status(400).send(error.toString());
     }
 }
 
-function deleteFormulario(request, response) {
+async function updateFormulario(request, response) {
     try {
-        let id = request.params.id;
+        let formularioValido = await formularioValidation.existeResponsavelSolicitacao(request.body.Responsavel, request.body.Solicitacao);
 
-        formularioService.deleteFormulario(id)
-            .then(result => {
-                response.status(201).send(result);
-            })
-            .catch(error => {
-                console.log(error);
-                response.status(400).send({
-                    errorMessage: 'Falha ao excluir um formulario'
-                });
-            });
+        if (formularioValido) {
+            let formularioCadastrado = await formularioService.updateFormulario(request.body);
+
+            if (formularioCadastrado.rowsAffected[0] != 0) {
+                response.status(200).send({ Message: 'Formulário cadastrado com sucesso' });
+            }
+            else {
+                response.status(400).send({ Error: 'Não foi possível atualizar o formulário' });
+            }
+        }
+        else {
+            response.status(200).send({Message: 'Formulario inválido. Por favor verifique se o responsável e a solicitação são válidos'});
+        }
     }
     catch (error) {
-        errorMessage(error, response, 'Erro ao excluir um formulário');
+        response.status(400).send(error.toString());
     }
 }
 
-function errorMessage(errorFromCatch, response, mensagemErro) {
-    console.log(errorFromCatch);
-    response.status(400).send({
-        errorMessage: mensagemErro
-    });
+async function deleteFormulario(request, response) {
+    try {
+        let formularioExcluido = await formularioService.deleteFormulario(request.params.id);
+
+        if (formularioExcluido.rowsAffected[0] != 0) {
+            response.status(200).send(formularioExcluido[0]);
+        }
+        else {
+            response.status(200).send({ Message: 'Nenhum formulario encontrado para exclusao' });
+        }
+    }
+    catch (error) {
+        response.status(400).send(error.toString());
+    }
 }

@@ -21,11 +21,10 @@ async function getArquivo() {
         let arquivo = await pool.request()
             .query('select * from arquivo');
 
-        return arquivo.recordsets;
+        return arquivo.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -38,11 +37,10 @@ async function getArquivoById(arquivoId) {
             .input('id_parameter', sql.Int, arquivoId)
             .query('select * from arquivo where id = @id_parameter');
 
-        return arquivo.recordsets;
+        return arquivo.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -57,11 +55,10 @@ async function addArquivo(arquivo) {
             .input('nome_parameter', sql.VarChar, arquivo.Nome)
             .query('insert into arquivo (arquivo, extensao, nome) values (@arquivo_parameter, @extensao_parameter, @nome_parameter)');
 
-        return addedArquivo.recordsets;
+        return addedArquivo.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -77,11 +74,10 @@ async function updateArquivo(arquivo) {
             .input('nome_parameter', sql.VarChar, arquivo.Nome)
             .query('update arquivo set arquivo = @arquivo_parameter, extensao = @extensao_parameter, nome = @nome_parameter where id = @id_parameter')
 
-        return updatedArquivo.recordsets;
+        return updatedArquivo.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -97,7 +93,6 @@ async function deleteArquivo(id) {
         return deleteArquivo;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }

@@ -18,11 +18,10 @@ async function getArquivoSolicitacao() {
     try {
         let pool = await sql.connect(databaseConfiguration);
         let arquivoSolicitacao = await pool.request().query("select * from ArquivoSolicitacao");
-        return arquivoSolicitacao.recordsets;
+        return arquivoSolicitacao.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -33,11 +32,10 @@ async function getArquivoSolicitacaoById(ArquivoSolicitacaoId) {
         let arquivoSolicitacao = await pool.request()
             .input('id_parameter', sql.Int, ArquivoSolicitacaoId)
             .query("select * from ArquivoSolicitacao where id = @id_parameter");
-        return arquivoSolicitacao.recordsets;
+        return arquivoSolicitacao.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -56,8 +54,7 @@ async function addArquivoSolicitacao(arquivoSolicitacao) {
         return addedArquivoSolicitacao;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -77,8 +74,7 @@ async function updateArquivoSolicitacao(arquivoSolicitacao) {
         return updatedArquivoSolicitacao;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -94,7 +90,6 @@ async function deleteArquivoSolicitacao(id) {
         return deletedArquivoSolicitacao;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }

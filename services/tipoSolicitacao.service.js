@@ -21,11 +21,10 @@ async function getTipoSolicitacao() {
         let tipoSolicitacao = await pool.request()
             .query('select * from tipoSolicitacao');
         
-        return tipoSolicitacao.recordsets;
+        return tipoSolicitacao.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -38,11 +37,10 @@ async function getTipoSolicitacaoById(id) {
             .input('id_parameter', sql.Int, id)
             .query('select * from tipoSolicitacao where id = @id_parameter');
         
-        return tipoSolicitacao.recordsets;
+        return tipoSolicitacao.recordset;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -59,8 +57,7 @@ async function addTipoSolicitacao(tipoSolicitacao) {
         return addedTipoSolicitacao;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -78,8 +75,7 @@ async function updateTipoSolicitacao(tipoSolicitacao) {
         return updatedTipoSolicitacao;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
 
@@ -95,7 +91,6 @@ async function deleteTipoSolicitacao(id) {
         return tipoSolicitacao;
     }
     catch (error) {
-        console.log(error);
-        deferred.resolve();
+        throw new Error(error);
     }
 }
