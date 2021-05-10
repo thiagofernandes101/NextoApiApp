@@ -45,20 +45,29 @@ async function listSolicitacaoById(request, response) {
 
 async function registerSolicitacao(request, response) {
     try {
-        let solicitacaoValida = await solicitacaoValidation.existeUsuariosTipoSolicitacao(request.body.Colaborador, request.body.Cliente, request.body.Tipo, request.body.Status);
+        // let solicitacaoValida = await solicitacaoValidation.existeUsuariosTipoSolicitacao(request.body.Colaborador, request.body.Cliente, request.body.Tipo, request.body.Status);
 
-        if (solicitacaoValida) {
-            let solicitacaoCadastrada = await solicitacaoService.addSolicitacao(request.body);
+        // if (solicitacaoValida) {
+        //     let solicitacaoCadastrada = await solicitacaoService.addSolicitacao(request.body);
 
-            if (solicitacaoCadastrada.rowsAffected[0] > 0) {
-                response.status(200).send({Message: 'Solicitação cadastrada com sucesso'});
-            }
-            else {
-                response.status(400).send({Error: 'Não foi possível cadastrar a solicitação'});
-            }
+        //     if (solicitacaoCadastrada.rowsAffected[0] > 0) {
+        //         response.status(200).send({ Message: 'Solicitação cadastrada com sucesso' });
+        //     }
+        //     else {
+        //         response.status(400).send({ Error: 'Não foi possível cadastrar a solicitação' });
+        //     }
+        // }
+        // else {
+        //     response.status(400).send({ Error: 'Solicitação inválida. Por favor verifique se os campos colaborador, cliente, tipo de solicitação e status foram preenchidos' });
+        // }
+
+        let solicitacaoCadastrada = await solicitacaoService.addSolicitacao(request.body);
+
+        if (solicitacaoCadastrada.rowsAffected[0] > 0) {
+            response.status(200).send({ Message: 'Solicitação cadastrada com sucesso' });
         }
         else {
-            response.status(400).send({Error: 'Solicitação inválida. Por favor verifique se os campos colaborador, cliente, tipo de solicitação e status foram preenchidos'});
+            response.status(400).send({ Error: 'Não foi possível cadastrar a solicitação' });
         }
     }
     catch (error) {
@@ -68,20 +77,28 @@ async function registerSolicitacao(request, response) {
 
 async function updateExistingSolicitacao(request, response) {
     try {
-        let solicitacaoValida = await solicitacaoValidation.existeUsuariosTipoSolicitacao(request.body.Colaborador, request.body.Cliente, request.body.Tipo, request.body.Status);
+        // let solicitacaoValida = await solicitacaoValidation.existeUsuariosTipoSolicitacao(request.body.Colaborador, request.body.Cliente, request.body.Tipo, request.body.Status);
 
-        if (solicitacaoValida) {
-            let solicitacaoCadastrada = await solicitacaoService.updateSolicitacao(request.body);
+        // if (solicitacaoValida) {
+        //     let solicitacaoCadastrada = await solicitacaoService.updateSolicitacao(request.body);
 
-            if (solicitacaoCadastrada.rowsAffected[0] > 0) {
-                response.status(200).send({Message: 'Solicitação atualizada com sucesso'});
-            }
-            else {
-                response.status(400).send({Error: 'Não foi possível atualizar a solicitação'});
-            }
+        //     if (solicitacaoCadastrada.rowsAffected[0] > 0) {
+        //         response.status(200).send({Message: 'Solicitação atualizada com sucesso'});
+        //     }
+        //     else {
+        //         response.status(400).send({Error: 'Não foi possível atualizar a solicitação'});
+        //     }
+        // }
+        // else {
+        //     response.status(400).send({Error: 'Solicitação inválida. Por favor verifique se os campos colaborador, cliente, tipo de solicitação e status foram preenchidos'});
+        // }
+        let solicitacaoCadastrada = await solicitacaoService.updateSolicitacao(request.body);
+
+        if (solicitacaoCadastrada.rowsAffected[0] > 0) {
+            response.status(200).send({ Message: 'Solicitação atualizada com sucesso' });
         }
         else {
-            response.status(400).send({Error: 'Solicitação inválida. Por favor verifique se os campos colaborador, cliente, tipo de solicitação e status foram preenchidos'});
+            response.status(400).send({ Error: 'Não foi possível atualizar a solicitação' });
         }
     }
     catch (error) {
