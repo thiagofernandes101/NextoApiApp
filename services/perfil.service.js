@@ -39,12 +39,25 @@ async function addPerfil(perfil) {
 
     try {
         let pool = await sql.connect(databaseConfiguration);
+        
         let addedPerfil = await pool.request()
             .input('descricao_parameter', sql.VarChar, perfil.Descricao)
             .input('sigla_parameter', sql.VarChar, perfil.Sigla)
-            .query('insert into perfil (descricao, sigla) values (@descricao_parameter, @sigla_parameter) select scope_identity() as id');
+            .query('insert into perfil (descricao, sigla) values (@descricao_parameter, @sigla_parameter) select scope_identity() as Id');
+        
+        // inserir 
+        // let table = new sql.Table('perfil');
+        // table.create = false;
+        // table.columns.add('Descricao', sql.VarChar, {nullable: true});
+        // table.columns.add('Sigla', sql.VarChar, {nullable: true});
 
-        return addedPerfil;
+        // perfil.forEach(row => {
+        //     table.rows.add(row)
+        // });
+
+        // let addedPerfil = await pool.request().bulk(table);
+
+        return addedPerfil.recordset[0].Id;
     }
     catch (error) {
         throw new Error(error);

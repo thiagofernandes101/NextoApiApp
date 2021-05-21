@@ -15,6 +15,7 @@ api.use('/api/usuario', require('./controllers/usuario.controller'));
 api.use('/api/perfil', require('./controllers/perfil.controller'));
 api.use('/api/formulario', require('./controllers/formulario.controller'));
 api.use('/api/solicitacao', require('./controllers/solicitacao.controller'));
+api.use('/api/arquivo', require('./controllers/arquivo.controller'));
 
 var apiPort = process.env.PORT || config.port;
 

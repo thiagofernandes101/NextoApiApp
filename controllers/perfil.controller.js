@@ -29,19 +29,30 @@ function listPerfilById(request, response) {
     })
 }
 
-function registerPerfil(request, response) {
-    let perfil = request.body;
+async function registerPerfil(request, response) {
+    try{
+        // let perfilAdicionado = await perfilService.addPerfil(request.body);
+        for (const perfil of request.body) {
+            let perfilId = await perfilService.addPerfil(perfil);
+            
+        }
+        response.send('Tentativa de inserção feita com sucesso');
+    }
+    catch (error) {
+        response.status(400).send(error.toString());
+    }
+    // let perfil = request.body;
 
-    perfilService.addPerfil(perfil)
-        .then(result => {
-            response.status(201).send(result.recordset);
-        })
-        .catch(error => {
-            console.log(error);
-            response.status(400).send({
-                errorMessage: 'Falha ao inserir um perfil'
-            });
-        });
+    // perfilService.addPerfil(perfil)
+    //     .then(result => {
+    //         response.status(201).send(result.recordset);
+    //     })
+    //     .catch(error => {
+    //         console.log(error);
+    //         response.status(400).send({
+    //             errorMessage: 'Falha ao inserir um perfil'
+    //         });
+    //     });
 }
 
 function updateExistingPerfil(request, response) {
