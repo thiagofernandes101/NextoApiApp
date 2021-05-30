@@ -1,13 +1,17 @@
 let express = require('express');
 let router = express.Router();
 let solicitacaoService = require('../services/solicitacao.service');
-let solicitacaoValidation = require('../validations/solicitacao.validation');
+let arquivoService = require('../services/arquivo.service');
+let arquivoSolicitacaoService = require('../services/arquivoSolicitacao.service');
+const { response } = require('express');
 
 router.post('/', registerSolicitacao);
 router.get('/', listSolicitacoes);
 router.get('/:id', listSolicitacaoById);
 router.put('/', updateExistingSolicitacao);
 router.delete('/:id', deleteSolicitacao);
+router.post('/salvarArquivo', salvarArquivo);
+router.post('/deleteArquivo/:id', deleteArquivo);
 
 module.exports = router;
 
@@ -19,7 +23,7 @@ async function listSolicitacoes(request, response) {
             response.status(200).send(solicitacoes);
         }
         else {
-            response.status(400).send({ Error: 'Nenhuma solicitação encontrada' });
+            response.status(400).send('Nenhuma solicitação encontrada');
         }
     }
     catch (error) {
@@ -29,13 +33,13 @@ async function listSolicitacoes(request, response) {
 
 async function listSolicitacaoById(request, response) {
     try {
-        let solicitacao = await solicitacaoService.getSolicitacaoById(request.body.Id);
+        let solicitacao = await solicitacaoService.getSolicitacaoById(request.params.id);
 
         if (solicitacao.length > 0) {
-            response.status(200).send(solicitacao);
+            response.status(200).send(solicitacao[0]);
         }
         else {
-            response.status(400).send({ Error: 'Nenhuma solicitação encontrada' });
+            response.status(400).send('Nenhuma solicitação encontrada');
         }
     }
     catch (error) {
@@ -45,29 +49,13 @@ async function listSolicitacaoById(request, response) {
 
 async function registerSolicitacao(request, response) {
     try {
-        // let solicitacaoValida = await solicitacaoValidation.existeUsuariosTipoSolicitacao(request.body.Colaborador, request.body.Cliente, request.body.Tipo, request.body.Status);
-
-        // if (solicitacaoValida) {
-        //     let solicitacaoCadastrada = await solicitacaoService.addSolicitacao(request.body);
-
-        //     if (solicitacaoCadastrada.rowsAffected[0] > 0) {
-        //         response.status(200).send({ Message: 'Solicitação cadastrada com sucesso' });
-        //     }
-        //     else {
-        //         response.status(400).send({ Error: 'Não foi possível cadastrar a solicitação' });
-        //     }
-        // }
-        // else {
-        //     response.status(400).send({ Error: 'Solicitação inválida. Por favor verifique se os campos colaborador, cliente, tipo de solicitação e status foram preenchidos' });
-        // }
-
         let solicitacaoCadastrada = await solicitacaoService.addSolicitacao(request.body);
 
         if (solicitacaoCadastrada.rowsAffected[0] > 0) {
-            response.status(200).send({ Message: 'Solicitação cadastrada com sucesso' });
+            response.status(200).send('Solicitação cadastrada com sucesso');
         }
         else {
-            response.status(400).send({ Error: 'Não foi possível cadastrar a solicitação' });
+            response.status(400).send('Não foi possível cadastrar a solicitação');
         }
     }
     catch (error) {
@@ -77,28 +65,13 @@ async function registerSolicitacao(request, response) {
 
 async function updateExistingSolicitacao(request, response) {
     try {
-        // let solicitacaoValida = await solicitacaoValidation.existeUsuariosTipoSolicitacao(request.body.Colaborador, request.body.Cliente, request.body.Tipo, request.body.Status);
-
-        // if (solicitacaoValida) {
-        //     let solicitacaoCadastrada = await solicitacaoService.updateSolicitacao(request.body);
-
-        //     if (solicitacaoCadastrada.rowsAffected[0] > 0) {
-        //         response.status(200).send({Message: 'Solicitação atualizada com sucesso'});
-        //     }
-        //     else {
-        //         response.status(400).send({Error: 'Não foi possível atualizar a solicitação'});
-        //     }
-        // }
-        // else {
-        //     response.status(400).send({Error: 'Solicitação inválida. Por favor verifique se os campos colaborador, cliente, tipo de solicitação e status foram preenchidos'});
-        // }
         let solicitacaoCadastrada = await solicitacaoService.updateSolicitacao(request.body);
 
         if (solicitacaoCadastrada.rowsAffected[0] > 0) {
-            response.status(200).send({ Message: 'Solicitação atualizada com sucesso' });
+            response.status(200).send('Solicitação atualizada com sucesso');
         }
         else {
-            response.status(400).send({ Error: 'Não foi possível atualizar a solicitação' });
+            response.status(400).send('Não foi possível atualizar a solicitação');
         }
     }
     catch (error) {
@@ -111,11 +84,54 @@ async function deleteSolicitacao(request, response) {
         let solicitacaoExcluida = await solicitacaoService.deleteSolicitacao(request.params.id);
 
         if (solicitacaoExcluida.rowsAffected[0] > 0) {
-            response.status(200).send({ Message: 'Solicitação excluida com sucesso' });
+            response.status(200).send('Solicitação excluida com sucesso');
         }
         else {
-            response.status(200).send({ Message: 'Nenhuma solicitação encontrada para exclusão' });
+            response.status(200).send('Nenhuma solicitação encontrada para exclusão');
         }
+    }
+    catch (error) {
+        response.status(400).send(error.ToString());
+    }
+}
+
+async function salvarArquivo(request, response) {
+    try {
+        let arquivos = request.body;
+        let arquivosInseridosComSucesso;
+
+        for (let index = 0; index < arquivos.length; index++) {
+            arquivosInseridosComSucesso = true;
+
+            let arquivo = arquivos[index];
+            let arquivoInserido = await arquivoService.addArquivo(arquivo);
+
+            arquivo.Id = arquivoInserido[0].ArquivoId;
+
+            let arquivoSolicitacaoInserido = await arquivoSolicitacaoService
+                .addArquivoSolicitacao(arquivo);
+
+            if (arquivoSolicitacaoInserido.rowsAffected[0] <= 0) {
+                arquivosInseridosComSucesso = false;
+            }
+        }
+
+        if (arquivosInseridosComSucesso) {
+            response.status(200).send('Arquivo inserido com sucesso');
+        }
+        else {
+            response.status(400).send('Não foi possível inserir o arquivo');
+        }
+    }
+    catch (error) {
+        response.status(400).response(error.ToString());
+    }
+}
+
+async function deleteArquivo(request, response) {
+    try {
+        let id = request.params.id
+        let x = 0;
     }
     catch (error) {
         response.status(400).send(error.ToString());

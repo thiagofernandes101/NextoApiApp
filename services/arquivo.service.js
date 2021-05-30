@@ -45,30 +45,18 @@ async function getArquivoById(arquivoId) {
     }
 }
 
-async function addArquivo(arquivos) {
+async function addArquivo(arquivo) {
     let deferred = q.defer();
 
     try {
         let pool = await sql.connect(databaseConfiguration);
-        // let addedArquivo = await pool.request()
-        //     .input('arquivo_parameter', sql.VarBinary, arquivo.Arquivo)
-        //     .input('extensao_parameter', sql.VarChar, arquivo.Extensao)
-        //     .input('nome_parameter', sql.VarChar, arquivo.Nome)
-        //     .query('insert into arquivo (arquivo, extensao, nome) values (@arquivo_parameter, @extensao_parameter, @nome_parameter)');
+        let addedArquivo = await pool.request()
+            .input('arquivo_parameter', sql.VarBinary, arquivo.Conteudo)
+            .input('extensao_parameter', sql.VarChar, arquivo.Extensao)
+            .input('nome_parameter', sql.VarChar, arquivo.Nome)
+            .query('insert into arquivo (arquivo, extensao, nome) values (@arquivo_parameter, @extensao_parameter, @nome_parameter) select scope_identity() as ArquivoId');
 
-        let table = new sql.Table('arquivo');
-        table.create = false;
-        table.columns.add('Arquivo', sql.VarBinary, {nullable: true});
-        table.columns.add('Extensao', sql.VarChar, {nullable: true});
-        table.columns.add('Nome', sql.VarChar, {nullable: true});
-
-        arquivos.forEach(row => {
-            table.rows.add(row)
-        });
-
-        let addedArquivo = await pool.request().bulk(table);
-
-        return addedArquivo;
+        return addedArquivo.recordset;
     }
     catch (error) {
         throw new Error(error);

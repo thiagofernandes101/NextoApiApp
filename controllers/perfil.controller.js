@@ -25,7 +25,7 @@ async function listPerfis(request, response) {
 
 function listPerfilById(request, response) {
     perfilService.getPerfilById(parseInt(request.params.id)).then(result => {
-        response.json(result);
+        response.json(result[0]);
     })
 }
 

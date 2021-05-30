@@ -64,7 +64,7 @@ async function insertArquivoSolicitacao(request, index, response,
         .addArquivoSolicitacao(arquivoSolicitacao);
 
     if (arquivoSolicitacaoInserido.rowsAffected[0] > 0) {
-        response.status(200).send({ Message: 'Arquivo inserido com sucesso' });
+        response.status(200).send('Arquivo inserido com sucesso');
     }
     else {
         arquivosInseridosComSucesso = false;
