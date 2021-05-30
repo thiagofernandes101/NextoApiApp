@@ -20,7 +20,7 @@ async function listFormularios(request, response) {
             response.status(200).send(formularios);
         }
         else {
-            response.status(400).send({ Error: 'Nenhum formulário encontrado' });
+            response.status(400).send('Nenhum formulário encontrado');
         }
     }
     catch (error) {
@@ -33,10 +33,10 @@ async function listFormularioById(request, response) {
         let formulario = await formularioService.getFormularioById(request.params.id);
 
         if (formulario.length > 0) {
-            response.status(200).send(formulario);
+            response.status(200).send(formulario[0]);
         }
         else {
-            response.status(400).send({ Error: 'Nenhum formulário encontrado' });
+            response.status(400).send('Nenhum formulário encontrado');
         }
     }
     catch (error) {
@@ -46,28 +46,13 @@ async function listFormularioById(request, response) {
 
 async function registerFormulario(request, response) {
     try {
-        // let formularioValido = await formularioValidation.existeResponsavelSolicitacao(request.body.Responsavel, request.body.Solicitacao);
-
-        // if (formularioValido) {
-        //     let formularioCadastrado = await formularioService.addFormulario(request.body);
-
-        //     if (formularioCadastrado.rowsAffected[0] != 0) {
-        //         response.status(200).send({ Message: 'Formulário cadastrado com sucesso' });
-        //     }
-        //     else {
-        //         response.status(400).send({ Error: 'Não foi possível cadastrar o formulário' });
-        //     }
-        // }
-        // else {
-        //     response.status(200).send({Message: 'Formulario inválido. Por favor verifique se o responsável e a solicitação são válidos'});
-        // }
         let formularioCadastrado = await formularioService.addFormulario(request.body);
 
         if (formularioCadastrado.rowsAffected[0] != 0) {
-            response.status(200).send({ Message: 'Formulário cadastrado com sucesso' });
+            response.status(200).send('Formulário cadastrado com sucesso');
         }
         else {
-            response.status(400).send({ Error: 'Não foi possível cadastrar o formulário' });
+            response.status(400).send('Não foi possível cadastrar o formulário');
         }
     }
     catch (error) {
@@ -95,10 +80,10 @@ async function updateFormulario(request, response) {
         let formularioCadastrado = await formularioService.updateFormulario(request.body);
 
         if (formularioCadastrado.rowsAffected[0] != 0) {
-            response.status(200).send({ Message: 'Formulário atualizado com sucesso' });
+            response.status(200).send('Formulário atualizado com sucesso');
         }
         else {
-            response.status(400).send({ Error: 'Não foi possível atualizar o formulário' });
+            response.status(400).send('Não foi possível atualizar o formulário');
         }
     }
     catch (error) {
@@ -111,10 +96,10 @@ async function deleteFormulario(request, response) {
         let formularioExcluido = await formularioService.deleteFormulario(request.params.id);
 
         if (formularioExcluido.rowsAffected[0] != 0) {
-            response.status(200).send({ Message: 'Formulário excluido com sucesso' });
+            response.status(200).send('Formulário excluido com sucesso');
         }
         else {
-            response.status(200).send({ Message: 'Nenhum formulario encontrado para exclusao' });
+            response.status(200).send('Nenhum formulario encontrado para exclusao');
         }
     }
     catch (error) {

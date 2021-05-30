@@ -10,6 +10,7 @@ service.getArquivoById = getArquivoById;
 service.addArquivo = addArquivo;
 service.updateArquivo = updateArquivo;
 service.deleteArquivo = deleteArquivo;
+service.getArquviosBySolicitacaoId = getArquviosBySolicitacaoId;
 
 module.exports = service;
 
@@ -50,10 +51,10 @@ async function addArquivo(arquivo) {
     try {
         let pool = await sql.connect(databaseConfiguration);
         let addedArquivo = await pool.request()
-            .input('arquivo_parameter', sql.VarBinary, arquivo.Arquivo)
+            .input('arquivo_parameter', sql.VarBinary, arquivo.Conteudo)
             .input('extensao_parameter', sql.VarChar, arquivo.Extensao)
             .input('nome_parameter', sql.VarChar, arquivo.Nome)
-            .query('insert into arquivo (arquivo, extensao, nome) values (@arquivo_parameter, @extensao_parameter, @nome_parameter)');
+            .query('insert into arquivo (arquivo, extensao, nome) values (@arquivo_parameter, @extensao_parameter, @nome_parameter) select scope_identity() as ArquivoId');
 
         return addedArquivo.recordset;
     }
@@ -66,13 +67,20 @@ async function updateArquivo(arquivo) {
     let deferred = q.defer();
 
     try {
+        let commandSql = `
+            update arquivo 
+            set arquivo = @arquivo_parameter, 
+            extensao = @extensao_parameter, nome = @nome_parameter 
+            where id = @id_parameter
+            `;
+
         let pool = await sql.connect(databaseConfiguration);
         let updatedArquivo = await pool.request()
             .input('id_parameter', sql.Int, arquivo.Id)
             .input('arquivo_parameter', sql.VarBinary, arquivo.Arquivo)
             .input('extensao_parameter', sql.VarChar, arquivo.Extensao)
             .input('nome_parameter', sql.VarChar, arquivo.Nome)
-            .query('update arquivo set arquivo = @arquivo_parameter, extensao = @extensao_parameter, nome = @nome_parameter where id = @id_parameter')
+            .query(commandSql);
 
         return updatedArquivo.recordset;
     }
@@ -91,6 +99,33 @@ async function deleteArquivo(id) {
             .query('delete from arquivo where id = @id_parameter');
         
         return deleteArquivo;
+    }
+    catch (error) {
+        throw new Error(error);
+    }
+}
+
+async function getArquviosBySolicitacaoId(id) {
+    try {
+        let commandSql = `
+            select Arquivo.Id,
+                Arquivo.Arquivo,
+                Arquivo.Extensao,
+                Arquivo.Nome,
+                ArquivoSolicitacao.Solicitacao,
+                ArquivoSolicitacao.Tipo
+            from Arquivo
+            inner join ArquivoSolicitacao
+                on ArquivoSolicitacao.Arquivo = Arquivo.Id
+            where ArquivoSolicitacao.Solicitacao = @id_parameter
+        `;
+
+        let pool = await sql.connect(databaseConfiguration);
+        let arquivos = await pool.request()
+            .input('id_parameter', sql.Int, id)
+            .query(commandSql);
+        
+        return arquivos.recordset;
     }
     catch (error) {
         throw new Error(error);

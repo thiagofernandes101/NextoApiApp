@@ -43,11 +43,13 @@ async function addArquivoSolicitacao(arquivoSolicitacao) {
     let deferred = q.defer();
 
     try{
+        let arquivoSolicitacaoId = arquivoSolicitacao.Id == null ? 0 : arquivoSolicitacao.Id;
+
         let pool = await sql.connect(databaseConfiguration);
         let addedArquivoSolicitacao = await pool.request()
             .input('nome_parameter', sql.VarChar, arquivoSolicitacao.Nome)
             .input('solicitacao_parameter', sql.VarChar, arquivoSolicitacao.Solicitacao)
-            .input('arquivo_parameter', sql.VarChar, arquivoSolicitacao.Arquivo)
+            .input('arquivo_parameter', sql.VarChar, arquivoSolicitacaoId)
             .input('tipo_parameter', sql.VarChar, arquivoSolicitacao.Tipo)
             .query('insert into ArquivoSolicitacao (nome, solicitacao, arquivo, tipo) values (@nome_parameter, @solicitacao_parameter, @arquivo_parameter, @tipo_parameter)');
 

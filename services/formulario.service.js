@@ -1,6 +1,8 @@
 let config = require('../config.json');
 let sql = require('mssql');
 
+let usuarioService = require('./usuario.service');
+
 let databaseConfiguration = process.env.NEXTODATABASE || config.localConnection;
 
 var service = {};
@@ -9,6 +11,7 @@ service.getFormulario = getFormulario;
 service.getFormularioById = getFormularioById;
 service.deleteFormulario = deleteFormulario;
 service.updateFormulario = updateFormulario;
+service.getFormularioBySolicitacao = getFormularioBySolicitacao;
 
 module.exports = service;
 
@@ -18,10 +21,19 @@ async function getFormulario() {
         let formulario = await pool.request()
             .query('select * from formulario');
 
+        await getNodeResponsavel(formulario.recordset);
+
         return formulario.recordset;
     }
     catch (error) {
         throw new Error(error);
+    }
+}
+
+async function getNodeResponsavel(formulario) {
+    for (let formularioIndex = 0; formularioIndex < formulario.length; formularioIndex++) {
+        let responsavel = await usuarioService.getUsuarioById(formulario[formularioIndex].Responsavel);
+        formulario[formularioIndex].Responsavel = responsavel[0];
     }
 }
 
@@ -31,6 +43,8 @@ async function getFormularioById(id) {
         let formulario = await pool.request()
             .input('id_parameter', sql.Int, id)
             .query('select * from formulario where id = @id_parameter');
+
+        await getNodeResponsavel(formulario.recordset);
 
         return formulario.recordset;
     }
@@ -45,7 +59,7 @@ async function addFormulario(formulario) {
         let addedFormulario = await pool.request()
             .input('solicitacao_parameter', sql.Int, formulario.Solicitacao)
             .input('enviado_parameter', sql.DateTime, formulario.Enviado)
-            .input('responsavel_parameter', sql.Int, formulario.Responsavel)
+            .input('responsavel_parameter', sql.Int, formulario.Responsavel.Id)
             .input('nome_parameter', sql.VarChar, formulario.Nome)
             .input('retorno_parameter', sql.VarChar, formulario.Retorno)
             .input('campoAplicacao_parameter', sql.VarChar, formulario.CampoAplicacao)
@@ -98,8 +112,24 @@ async function deleteFormulario(id) {
         let formulario = await pool.request()
             .input('id_parameter', sql.Int, id)
             .query('delete from formulario where id = @id_parameter');
-        
+
         return formulario;
+    }
+    catch (error) {
+        throw new Error(error);
+    }
+}
+
+async function getFormularioBySolicitacao(id) {
+    try {
+        let pool = await sql.connect(databaseConfiguration);
+        let formulario = await pool.request()
+            .input('solicitacao_parameter', sql.Int, id)
+            .query('select * from formulario where solicitacao = @solicitacao_parameter');
+
+        await getNodeResponsavel(formulario.recordset);
+
+        return formulario.recordset;
     }
     catch (error) {
         throw new Error(error);
