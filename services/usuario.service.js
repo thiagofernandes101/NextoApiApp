@@ -63,8 +63,7 @@ async function addUsuario(usuario) {
             .input('estado_parameter', sql.VarChar, usuario.Estado)
             .input('cidade_parameter', sql.VarChar, usuario.Cidade)
             .input('perfil_parameter', sql.Int, usuario.Perfil)
-            .input('birthDate_parameter', sql.DateTime, usuario.BirthDate)
-            .query('insert into Usuario (usuario, senha, nome, telefone, email, cpf, sexo, estado, cidade, perfil, BirthDate) values (@usuario_parameter, @senha_parameter, @nome_parameter, @telefone_parameter, @email_parameter, @cpf_parameter, @sexo_parameter, @estado_parameter, @cidade_parameter, @perfil_parameter, @birthDate_parameter)');
+            .query('insert into Usuario (usuario, senha, nome, telefone, email, cpf, sexo, estado, cidade, perfil) values (@usuario_parameter, @senha_parameter, @nome_parameter, @telefone_parameter, @email_parameter, @cpf_parameter, @sexo_parameter, @estado_parameter, @cidade_parameter, @perfil_parameter)');
 
         return addedUsuario;
     }
@@ -86,8 +85,7 @@ async function updateUsuario(usuario) {
             .input('estado_parameter', sql.VarChar, usuario.Estado)
             .input('cidade_parameter', sql.VarChar, usuario.Cidade)
             .input('perfil_parameter', sql.Int, usuario.Perfil)
-            .input('birthDate_parameter', sql.DateTime, usuario.BirthDate)
-            .query('update Usuario set nome = @nome_parameter, telefone = @telefone_parameter, email = @email_parameter, sexo = @sexo_parameter, estado = @estado_parameter, cidade = @cidade_parameter, perfil = @perfil_parameter, BirthDate = @birthDate_parameter where id = @id_parameter');
+            .query('update Usuario set nome = @nome_parameter, telefone = @telefone_parameter, email = @email_parameter, sexo = @sexo_parameter, estado = @estado_parameter, cidade = @cidade_parameter, perfil = @perfil_parameter where id = @id_parameter');
 
 
         return updatedUsuario;
