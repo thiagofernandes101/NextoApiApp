@@ -4,7 +4,8 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "swagger-autogen": "node swagger.js"
   },
   "repository": {
     "type": "git",
@@ -26,6 +27,8 @@
     "mssql": "^6.3.1",
     "q": "^1.5.1",
     "rootpath": "^0.1.2",
-    "thread-sleep": "^2.2.0"
+    "thread-sleep": "^2.2.0",
+    "swagger-autogen": "^2.8.2",
+    "swagger-ui-express": "^4.1.4"
   }
 }
